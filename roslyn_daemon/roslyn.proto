@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "RoslynDaemon.Protos";
+
+package roslyn;
+
+// The Roslyn service definition.
+service RoslynParser {
+  // Simple ping method for health checks
+  rpc Ping (PingRequest) returns (PingReply);
+
+  // TODO: Define methods for AST parsing (e.g., ParseFile, ParseString)
+}
+
+// The request message for Ping.
+message PingRequest {
+  string message = 1;
+}
+
+// The response message for Ping.
+message PingReply {
+  string reply = 1;
+}
+

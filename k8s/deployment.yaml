@@ -1,0 +1,67 @@
+# This is a Kubernetes Deployment manifest for the Driftbench SDK.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: driftbench-sdk
+spec:
+  replicas: 1 # Start with 1 replica, adjust as needed
+  selector:
+    matchLabels:
+      app: driftbench-sdk
+  template:
+    metadata:
+      labels:
+        app: driftbench-sdk
+    spec:
+      containers:
+        - name: driftbench-sdk
+          # TODO: Replace with your actual container image registry/name/tag
+          image: your-registry/driftbench-sdk:latest
+          ports:
+            - containerPort: 8000 # Port exposed by Gunicorn in Dockerfile
+          env:
+            # Example environment variable from blueprint
+            - name: DRIFTBENCH_ALLOW_PASS
+              value: "false"
+            # TODO: Add other necessary environment variables (e.g., DB connection, secrets)
+            # Example using ConfigMap or Secrets:
+            # - name: DATABASE_URL
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: driftbench-config
+            #       key: database.url
+            # - name: SECRET_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: driftbench-secrets
+            #       key: api.secret.key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15 # Increased delay to allow app start
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            # Resource limits from blueprint
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            # Optional: Define requests as well
+            # requests:
+            #   cpu: "0.5"
+            #   memory: "256Mi"
+          # TODO: Configure volume mounts if needed (e.g., for persistent logs if not using external DB)
+          # volumeMounts:
+          # - name: log-volume
+          #   mountPath: /app/logs
+      # volumes:
+      # - name: log-volume
+      #   persistentVolumeClaim:
+      #     claimName: driftbench-log-pvc
